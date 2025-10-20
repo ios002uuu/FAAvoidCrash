@@ -30,11 +30,8 @@
     });
 }
 
-//=================================================================
-//                     replaceCharactersInRange
-//=================================================================
-#pragma mark - replaceCharactersInRange
 
+#pragma mark - replaceCharactersInRange
 - (void)avoidCrashReplaceCharactersInRange:(NSRange)range withString:(NSString *)aString {
     
     @try {
@@ -49,11 +46,7 @@
     }
 }
 
-//=================================================================
-//                     insertString:atIndex:
-//=================================================================
 #pragma mark - insertString:atIndex:
-
 - (void)avoidCrashInsertString:(NSString *)aString atIndex:(NSUInteger)loc {
     
     @try {
@@ -68,9 +61,6 @@
     }
 }
 
-//=================================================================
-//                   deleteCharactersInRange
-//=================================================================
 #pragma mark - deleteCharactersInRange
 
 - (void)avoidCrashDeleteCharactersInRange:(NSRange)range {

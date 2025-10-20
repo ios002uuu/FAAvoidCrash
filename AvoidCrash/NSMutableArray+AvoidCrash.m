@@ -7,10 +7,40 @@
 //
 
 #import "NSMutableArray+AvoidCrash.h"
-
 #import "AvoidCrash.h"
+#import "ACAvoidLockTaskQueue.h"
+#import <os/lock.h>
 
+static const void *AvoidCrashNSMutableArrayyKey = &AvoidCrashNSMutableArrayyKey;
+static const void *AvoidCrashNSMutableArrayyKeyV3 = &AvoidCrashNSMutableArrayyKeyV3;
 @implementation NSMutableArray (AvoidCrash)
+
+- (NSMutableArray *)needSafe {
+    objc_setAssociatedObject(self, AvoidCrashNSMutableArrayyKey, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return self;
+}
+
+- (NSMutableArray *)needSafeV2 {
+    objc_setAssociatedObject(self, AvoidCrashNSMutableArrayyKey, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return self;
+}
+
+- (NSMutableArray *)needSafeV3 {
+    ACAvoidLockTaskQueue *queue = [[ACAvoidLockTaskQueue alloc] init];
+    objc_setAssociatedObject(self, AvoidCrashNSMutableArrayyKeyV3, queue, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return self;
+}
+
+- (ACAvoidLockTaskQueue *)queue {
+    ACAvoidLockTaskQueue *queue = objc_getAssociatedObject(self, AvoidCrashNSMutableArrayyKeyV3);
+    return queue;
+}
+
+- (BOOL)isNeedSafe {
+    id obj = objc_getAssociatedObject(self, AvoidCrashNSMutableArrayyKeyV3);
+    id obj1 = objc_getAssociatedObject(self, AvoidCrashNSMutableArrayyKey);
+    return obj || obj1;
+}
 
 + (void)avoidCrashExchangeMethod {
     
@@ -19,45 +49,29 @@
         
         Class arrayMClass = NSClassFromString(@"__NSArrayM");
         
-        
-        //objectAtIndex:
         [AvoidCrash exchangeInstanceMethod:arrayMClass method1Sel:@selector(objectAtIndex:) method2Sel:@selector(avoidCrashObjectAtIndex:)];
         
-        //objectAtIndexedSubscript
         if (AvoidCrashIsiOS(11.0)) {
             [AvoidCrash exchangeInstanceMethod:arrayMClass method1Sel:@selector(objectAtIndexedSubscript:) method2Sel:@selector(avoidCrashObjectAtIndexedSubscript:)];
         }
         
-        
-        //setObject:atIndexedSubscript:
         [AvoidCrash exchangeInstanceMethod:arrayMClass method1Sel:@selector(setObject:atIndexedSubscript:) method2Sel:@selector(avoidCrashSetObject:atIndexedSubscript:)];
         
-        
-        //removeObjectAtIndex:
         [AvoidCrash exchangeInstanceMethod:arrayMClass method1Sel:@selector(removeObjectAtIndex:) method2Sel:@selector(avoidCrashRemoveObjectAtIndex:)];
         
-        //insertObject:atIndex:
         [AvoidCrash exchangeInstanceMethod:arrayMClass method1Sel:@selector(insertObject:atIndex:) method2Sel:@selector(avoidCrashInsertObject:atIndex:)];
         
-        //getObjects:range:
         [AvoidCrash exchangeInstanceMethod:arrayMClass method1Sel:@selector(getObjects:range:) method2Sel:@selector(avoidCrashGetObjects:range:)];
     });
-    
-    
-    
 }
 
-
-//=================================================================
-//                    array set object at index
-//=================================================================
 #pragma mark - get object from array
-
-
 - (void)avoidCrashSetObject:(id)obj atIndexedSubscript:(NSUInteger)idx {
     
     @try {
-        [self avoidCrashSetObject:obj atIndexedSubscript:idx];
+        threadSafe_mutex(^{
+            [self avoidCrashSetObject:obj atIndexedSubscript:idx];
+        }, self.mutex_lock, [self isNeedSafe], [self queue]);
     }
     @catch (NSException *exception) {
         [AvoidCrash noteErrorWithException:exception defaultToDo:AvoidCrashDefaultIgnore];
@@ -67,15 +81,12 @@
     }
 }
 
-
-//=================================================================
-//                    removeObjectAtIndex:
-//=================================================================
 #pragma mark - removeObjectAtIndex:
-
 - (void)avoidCrashRemoveObjectAtIndex:(NSUInteger)index {
     @try {
-        [self avoidCrashRemoveObjectAtIndex:index];
+        threadSafe_mutex(^{
+            [self avoidCrashRemoveObjectAtIndex:index];
+        }, self.mutex_lock, [self isNeedSafe], [self queue]);
     }
     @catch (NSException *exception) {
         [AvoidCrash noteErrorWithException:exception defaultToDo:AvoidCrashDefaultIgnore];
@@ -85,14 +96,12 @@
     }
 }
 
-
-//=================================================================
-//                    insertObject:atIndex:
-//=================================================================
 #pragma mark - set方法
 - (void)avoidCrashInsertObject:(id)anObject atIndex:(NSUInteger)index {
     @try {
-        [self avoidCrashInsertObject:anObject atIndex:index];
+        threadSafe_mutex(^{
+            [self avoidCrashInsertObject:anObject atIndex:index];
+        }, self.mutex_lock, [self isNeedSafe], [self queue]);
     }
     @catch (NSException *exception) {
         [AvoidCrash noteErrorWithException:exception defaultToDo:AvoidCrashDefaultIgnore];
@@ -102,17 +111,15 @@
     }
 }
 
-
-//=================================================================
-//                           objectAtIndex:
-//=================================================================
 #pragma mark - objectAtIndex:
 
 - (id)avoidCrashObjectAtIndex:(NSUInteger)index {
-    id object = nil;
+    __block id object = nil;
     
     @try {
-        object = [self avoidCrashObjectAtIndex:index];
+        threadSafe_mutex(^{
+            object = [self avoidCrashObjectAtIndex:index];
+        }, self.mutex_lock, [self isNeedSafe], [self queue]);
     }
     @catch (NSException *exception) {
         NSString *defaultToDo = AvoidCrashDefaultReturnNil;
@@ -123,15 +130,14 @@
     }
 }
 
-//=================================================================
-//                     objectAtIndexedSubscript:
-//=================================================================
 #pragma mark - objectAtIndexedSubscript:
 - (id)avoidCrashObjectAtIndexedSubscript:(NSUInteger)idx {
-    id object = nil;
+    __block id object = nil;
     
     @try {
-        object = [self avoidCrashObjectAtIndexedSubscript:idx];
+        threadSafe_mutex(^{
+            object = [self avoidCrashObjectAtIndexedSubscript:idx];
+        }, self.mutex_lock, [self isNeedSafe], [self queue]);
     }
     @catch (NSException *exception) {
         NSString *defaultToDo = AvoidCrashDefaultReturnNil;
@@ -143,12 +149,7 @@
     
 }
 
-
-//=================================================================
-//                         getObjects:range:
-//=================================================================
 #pragma mark - getObjects:range:
-
 - (void)avoidCrashGetObjects:(__unsafe_unretained id  _Nonnull *)objects range:(NSRange)range {
     
     @try {
@@ -162,8 +163,5 @@
         
     }
 }
-
-
-
 
 @end

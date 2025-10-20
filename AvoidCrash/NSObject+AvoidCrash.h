@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <os/lock.h>
 
 @interface NSObject (AvoidCrash)
 
@@ -20,6 +20,9 @@
 + (void)setupNoneSelClassStringsArr:(NSArray<NSString *> *)classStrings;
 
 + (void)setupNoneSelClassStringPrefixsArr:(NSArray<NSString *> *)classStringPrefixs;
+
+- (os_unfair_lock *)unfair_lock;
+- (pthread_mutex_t *)mutex_lock;
 
 @end
 

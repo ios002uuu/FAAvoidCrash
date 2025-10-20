@@ -1,15 +1,5 @@
-//
-//  AvoidCrash.m
-//  https://github.com/chenfanfang/AvoidCrash
-//
-//  Created by mac on 16/9/21.
-//  Copyright © 2016年 chenfanfang. All rights reserved.
-//
 
 #import "AvoidCrash.h"
-
-
-
 
 #define key_errorName        @"errorName"
 #define key_errorReason      @"errorReason"
@@ -170,50 +160,23 @@
  */
 + (void)noteErrorWithException:(NSException *)exception defaultToDo:(NSString *)defaultToDo {
 
-    //堆栈数据
-    NSArray *callStackSymbolsArr = [NSThread callStackSymbols];
-    
-    //获取在哪个类的哪个方法中实例化的数组  字符串格式 -[类名 方法名]  或者 +[类名 方法名]
-    NSString *mainCallStackSymbolMsg = [AvoidCrash getMainCallStackSymbolMessageWithCallStackSymbols:callStackSymbolsArr];
-    
-    if (mainCallStackSymbolMsg == nil) {
-        
-        mainCallStackSymbolMsg = @"崩溃方法定位失败,请您查看函数调用栈来排查错误原因";
-        
-    }
-    
-    NSString *errorName = exception.name;
-    NSString *errorReason = exception.reason;
-    //errorReason 可能为 -[__NSCFConstantString avoidCrashCharacterAtIndex:]: Range or index out of bounds
-    //将avoidCrash去掉
-    errorReason = [errorReason stringByReplacingOccurrencesOfString:@"avoidCrash" withString:@""];
-    
-    NSString *errorPlace = [NSString stringWithFormat:@"Error Place:%@",mainCallStackSymbolMsg];
-    
-    NSString *logErrorMessage = [NSString stringWithFormat:@"\n\n%@\n\n%@\n%@\n%@\n%@",AvoidCrashSeparatorWithFlag, errorName, errorReason, errorPlace, defaultToDo];
-    
-    logErrorMessage = [NSString stringWithFormat:@"%@\n\n%@\n\n",logErrorMessage,AvoidCrashSeparator];
-    AvoidCrashLog(@"%@",logErrorMessage);
-    
-    
-    //请忽略下面的赋值，目的只是为了能顺利上传到cocoapods
-    logErrorMessage = logErrorMessage;
-    
-    NSDictionary *errorInfoDic = @{
-                                   key_errorName        : errorName,
-                                   key_errorReason      : errorReason,
-                                   key_errorPlace       : errorPlace,
-                                   key_defaultToDo      : defaultToDo,
-                                   key_exception        : exception,
-                                   key_callStackSymbols : callStackSymbolsArr
-                                   };
-    
-    //将错误信息放在字典里，用通知的形式发送出去
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:AvoidCrashNotification object:nil userInfo:errorInfoDic];
-    });
 }
 
-
+- (BOOL)isObjectValid:(id)object {
+    if (object == nil) {
+        return NO;
+    }
+    
+    if ([object respondsToSelector:@selector(class)]) {
+        @try {
+            Class cls = [object class];
+            return (cls != nil && object != (id)0x0);
+        } @catch (NSException *exception) {
+            return NO;
+        }
+    }
+    
+    return NO;
+}
 
 @end

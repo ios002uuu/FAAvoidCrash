@@ -31,9 +31,6 @@
 
 }
 
-//=================================================================
-//                           initWithString:
-//=================================================================
 #pragma mark - initWithString:
 
 - (instancetype)avoidCrashInitWithString:(NSString *)str {
@@ -51,12 +48,7 @@
     }
 }
 
-
-//=================================================================
-//                          initWithAttributedString
-//=================================================================
 #pragma mark - initWithAttributedString
-
 - (instancetype)avoidCrashInitWithAttributedString:(NSAttributedString *)attrStr {
     id object = nil;
     
@@ -73,9 +65,6 @@
 }
 
 
-//=================================================================
-//                      initWithString:attributes:
-//=================================================================
 #pragma mark - initWithString:attributes:
 
 - (instancetype)avoidCrashInitWithString:(NSString *)str attributes:(NSDictionary<NSString *,id> *)attrs {

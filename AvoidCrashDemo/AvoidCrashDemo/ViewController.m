@@ -7,11 +7,14 @@
 //
 
 #import "ViewController.h"
-
 #import "Person.h"
 #import "AvoidCrashPerson.h"
+#import "AvoidCrashPerson.h"
+#import "AvoidCrash.h"
 
 @interface ViewController ()
+
+@property (nonatomic, strong) NSMutableDictionary *dict;
 
 
 @end
@@ -21,9 +24,65 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    __unused NSMutableArray *marr = NSMutableArray.array.needSafeV3;
+    self.dict = NSMutableDictionary.dictionary.needSafeV3;
+    self.dict[@"11"] = @"aa";
+    dispatch_queue_t queue1 = dispatch_queue_create("test", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_queue_t queue2 = dispatch_queue_create("test111", DISPATCH_QUEUE_CONCURRENT);
+    
+    for (int i = 0; i < 20000; i++) {
+        dispatch_async(queue1, ^{
+            self.dict[@"key"] = @(i);
+        });
+        dispatch_async(queue2, ^{
+            self.dict[@"key"] = @(i+1);
+        });
+    }
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        self.dict[@"11"] = @"ff";
+    });
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        self.dict[@"11"] = @"ee";
+    });
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        self.dict[@"11"] = @"gg";
+    });
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        self.dict[@"11"] = @"hh";
+    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        self.dict[@"11"] = @"cc";
+//    });
+    NSLog(@".....:%@",self.dict[@"11"]);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@".....:%@",self.dict);
+    });
+    
+    NSMutableDictionary *dict1 = NSMutableDictionary.dictionary.needSafeV3;
+    dict1[@"11"] = @"aa";
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        dict1[@"11"] = @"bb";
+    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        dict1[@"11"] = @"cc";
+    });
+    NSLog(@".....:%@",dict1[@"11"]);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@".....:%@", dict1);
+    });
+    
+    
+    ACAvoidLockTaskQueue *queue = [[ACAvoidLockTaskQueue alloc] init];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"%@",queue);
+    });
+    
     [self executeAllTestMethod];
-    
-    
+}
+
+- (NSMutableArray *)lazyMarr {
+    return NSMutableArray.array.needSafeV2;
 }
 
 

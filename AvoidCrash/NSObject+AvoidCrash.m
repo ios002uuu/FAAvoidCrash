@@ -9,28 +9,55 @@
 #import "NSObject+AvoidCrash.h"
 #import "AvoidCrash.h"
 #import "AvoidCrashStubProxy.h"
+#import <objc/runtime.h>
+#import "pthread.h"
 
 @implementation NSObject (AvoidCrash)
 
+static const void *AvoidCrashNSObjectLockKey = &AvoidCrashNSObjectLockKey;
+
+- (os_unfair_lock *)unfair_lock {
+    os_unfair_lock *lock = (__bridge os_unfair_lock *)(objc_getAssociatedObject(self, AvoidCrashNSObjectLockKey));
+    if (!lock) {
+        lock = malloc(sizeof(os_unfair_lock));
+        *lock = OS_UNFAIR_LOCK_INIT;
+        objc_setAssociatedObject(self, AvoidCrashNSObjectLockKey, [NSValue valueWithPointer:lock], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return lock;
+}
+
+- (pthread_mutex_t *)mutex_lock {
+    pthread_mutex_t *lock = (__bridge pthread_mutex_t *)(objc_getAssociatedObject(self, AvoidCrashNSObjectLockKey));
+    if (!lock) {
+        lock = malloc(sizeof(pthread_mutex_t));
+
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        // 设置为递归锁（同一线程可重入）
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+        pthread_mutex_init(lock, &attr);
+        pthread_mutexattr_destroy(&attr);
+
+        objc_setAssociatedObject(self, AvoidCrashNSObjectLockKey,
+                                 [NSValue valueWithPointer:lock],
+                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return lock;
+}
 
 + (void)avoidCrashExchangeMethodIfDealWithNoneSel:(BOOL)ifDealWithNoneSel {
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        //setValue:forKey:
+        
         [AvoidCrash exchangeInstanceMethod:[self class] method1Sel:@selector(setValue:forKey:) method2Sel:@selector(avoidCrashSetValue:forKey:)];
         
-        //setValue:forKeyPath:
         [AvoidCrash exchangeInstanceMethod:[self class] method1Sel:@selector(setValue:forKeyPath:) method2Sel:@selector(avoidCrashSetValue:forKeyPath:)];
         
-        //setValue:forUndefinedKey:
         [AvoidCrash exchangeInstanceMethod:[self class] method1Sel:@selector(setValue:forUndefinedKey:) method2Sel:@selector(avoidCrashSetValue:forUndefinedKey:)];
         
-        //setValuesForKeysWithDictionary:
         [AvoidCrash exchangeInstanceMethod:[self class] method1Sel:@selector(setValuesForKeysWithDictionary:) method2Sel:@selector(avoidCrashSetValuesForKeysWithDictionary:)];
         
-        
-        //unrecognized selector sent to instance
         if (ifDealWithNoneSel) {
             [AvoidCrash exchangeInstanceMethod:[self class] method1Sel:@selector(methodSignatureForSelector:) method2Sel:@selector(avoidCrashMethodSignatureForSelector:)];
             [AvoidCrash exchangeInstanceMethod:[self class] method1Sel:@selector(forwardInvocation:) method2Sel:@selector(avoidCrashForwardInvocation:)];
@@ -38,12 +65,7 @@
     });
 }
 
-
-//=================================================================
-//              unrecognized selector sent to instance
-//=================================================================
 #pragma mark - unrecognized selector sent to instance
-
 
 static NSMutableArray *noneSelClassStrings;
 static NSMutableArray *noneSelClassStringPrefixs;
@@ -72,9 +94,7 @@ static NSMutableArray *noneSelClassStringPrefixs;
     });
 }
 
-/**
- *  初始化一个需要防止”unrecognized selector sent to instance”的崩溃的类名前缀的数组
- */
+// 初始化一个需要防止”unrecognized selector sent to instance”的崩溃的类名前缀的数组
 + (void)setupNoneSelClassStringPrefixsArr:(NSArray<NSString *> *)classStringPrefixs {
     if (noneSelClassStringPrefixs) {
         
@@ -139,12 +159,7 @@ static NSMutableArray *noneSelClassStringPrefixs;
     
 }
 
-
-//=================================================================
-//                         setValue:forKey:
-//=================================================================
 #pragma mark - setValue:forKey:
-
 - (void)avoidCrashSetValue:(id)value forKey:(NSString *)key {
     @try {
         [self avoidCrashSetValue:value forKey:key];
@@ -158,12 +173,7 @@ static NSMutableArray *noneSelClassStringPrefixs;
     }
 }
 
-
-//=================================================================
-//                     setValue:forKeyPath:
-//=================================================================
 #pragma mark - setValue:forKeyPath:
-
 - (void)avoidCrashSetValue:(id)value forKeyPath:(NSString *)keyPath {
     @try {
         [self avoidCrashSetValue:value forKeyPath:keyPath];
@@ -177,13 +187,7 @@ static NSMutableArray *noneSelClassStringPrefixs;
     }
 }
 
-
-
-//=================================================================
-//                     setValue:forUndefinedKey:
-//=================================================================
 #pragma mark - setValue:forUndefinedKey:
-
 - (void)avoidCrashSetValue:(id)value forUndefinedKey:(NSString *)key {
     @try {
         [self avoidCrashSetValue:value forUndefinedKey:key];
@@ -197,12 +201,7 @@ static NSMutableArray *noneSelClassStringPrefixs;
     }
 }
 
-
-//=================================================================
-//                  setValuesForKeysWithDictionary:
-//=================================================================
 #pragma mark - setValuesForKeysWithDictionary:
-
 - (void)avoidCrashSetValuesForKeysWithDictionary:(NSDictionary<NSString *,id> *)keyedValues {
     @try {
         [self avoidCrashSetValuesForKeysWithDictionary:keyedValues];
@@ -215,7 +214,5 @@ static NSMutableArray *noneSelClassStringPrefixs;
         
     }
 }
-
-
 
 @end

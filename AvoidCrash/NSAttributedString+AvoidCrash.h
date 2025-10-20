@@ -14,12 +14,3 @@
 
 @end
 
-/**
- *  Can avoid crash method
- *
- *  1.- (instancetype)initWithString:(NSString *)str
- *  2.- (instancetype)initWithAttributedString:(NSAttributedString *)attrStr
- *  3.- (instancetype)initWithString:(NSString *)str attributes:(NSDictionary<NSString *,id> *)attrs
- *
- *
- */

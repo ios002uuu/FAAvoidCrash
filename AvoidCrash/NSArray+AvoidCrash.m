@@ -17,30 +17,16 @@
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        //=================
-        //   class method
-        //=================
-        
-        //instance array method exchange
+
         [AvoidCrash exchangeClassMethod:[self class] method1Sel:@selector(arrayWithObjects:count:) method2Sel:@selector(AvoidCrashArrayWithObjects:count:)];
-        
-        
-        
-        //====================
-        //   instance method
-        //====================
-        
+
         Class __NSArray = NSClassFromString(@"NSArray");
         Class __NSArrayI = NSClassFromString(@"__NSArrayI");
+        Class __NSConstantArray = NSClassFromString(@"NSConstantArray");
         Class __NSSingleObjectArrayI = NSClassFromString(@"__NSSingleObjectArrayI");
         Class __NSArray0 = NSClassFromString(@"__NSArray0");
         
-        
-        //objectsAtIndexes:
         [AvoidCrash exchangeInstanceMethod:__NSArray method1Sel:@selector(objectsAtIndexes:) method2Sel:@selector(avoidCrashObjectsAtIndexes:)];
-        
-        
-        //objectAtIndex:
         
         [AvoidCrash exchangeInstanceMethod:__NSArrayI method1Sel:@selector(objectAtIndex:) method2Sel:@selector(__NSArrayIAvoidCrashObjectAtIndex:)];
         
@@ -51,27 +37,19 @@
         //objectAtIndexedSubscript:
         if (AvoidCrashIsiOS(11.0)) {
             [AvoidCrash exchangeInstanceMethod:__NSArrayI method1Sel:@selector(objectAtIndexedSubscript:) method2Sel:@selector(__NSArrayIAvoidCrashObjectAtIndexedSubscript:)];
+            [AvoidCrash exchangeInstanceMethod:__NSConstantArray method1Sel:@selector(objectAtIndexedSubscript:) method2Sel:@selector(__NSConstantArrayIAvoidCrashObjectAtIndexedSubscript:)];
         }
         
-        
-        //getObjects:range:
         [AvoidCrash exchangeInstanceMethod:__NSArray method1Sel:@selector(getObjects:range:) method2Sel:@selector(NSArrayAvoidCrashGetObjects:range:)];
+        [AvoidCrash exchangeInstanceMethod:__NSConstantArray method1Sel:@selector(getObjects:range:) method2Sel:@selector(__NSConstantArrayAvoidCrashGetObjects:range:)];
         
         [AvoidCrash exchangeInstanceMethod:__NSSingleObjectArrayI method1Sel:@selector(getObjects:range:) method2Sel:@selector(__NSSingleObjectArrayIAvoidCrashGetObjects:range:)];
         
         [AvoidCrash exchangeInstanceMethod:__NSArrayI method1Sel:@selector(getObjects:range:) method2Sel:@selector(__NSArrayIAvoidCrashGetObjects:range:)];
     });
-    
-    
 }
 
-
-//=================================================================
-//                        instance array
-//=================================================================
 #pragma mark - instance array
-
-
 + (instancetype)AvoidCrashArrayWithObjects:(const id  _Nonnull __unsafe_unretained *)objects count:(NSUInteger)cnt {
     
     id instance = nil;
@@ -101,11 +79,6 @@
     }
 }
 
-
-
-//=================================================================
-//                     objectAtIndexedSubscript:
-//=================================================================
 #pragma mark - objectAtIndexedSubscript:
 - (id)__NSArrayIAvoidCrashObjectAtIndexedSubscript:(NSUInteger)idx {
     id object = nil;
@@ -123,12 +96,23 @@
 
 }
 
+- (id)__NSConstantArrayIAvoidCrashObjectAtIndexedSubscript:(NSUInteger)idx {
+    id object = nil;
+    
+    @try {
+        object = [self __NSConstantArrayIAvoidCrashObjectAtIndexedSubscript:idx];
+    }
+    @catch (NSException *exception) {
+        NSString *defaultToDo = AvoidCrashDefaultReturnNil;
+        [AvoidCrash noteErrorWithException:exception defaultToDo:defaultToDo];
+    }
+    @finally {
+        return object;
+    }
 
-//=================================================================
-//                       objectsAtIndexes:
-//=================================================================
+}
+
 #pragma mark - objectsAtIndexes:
-
 - (NSArray *)avoidCrashObjectsAtIndexes:(NSIndexSet *)indexes {
     
     NSArray *returnArray = nil;
@@ -143,13 +127,7 @@
     }
 }
 
-
-//=================================================================
-//                         objectAtIndex:
-//=================================================================
 #pragma mark - objectAtIndex:
-
-//__NSArrayI  objectAtIndex:
 - (id)__NSArrayIAvoidCrashObjectAtIndex:(NSUInteger)index {
     id object = nil;
     
@@ -165,9 +143,6 @@
     }
 }
 
-
-
-//__NSSingleObjectArrayI objectAtIndex:
 - (id)__NSSingleObjectArrayIAvoidCrashObjectAtIndex:(NSUInteger)index {
     id object = nil;
     
@@ -183,7 +158,6 @@
     }
 }
 
-//__NSArray0 objectAtIndex:
 - (id)__NSArray0AvoidCrashObjectAtIndex:(NSUInteger)index {
     id object = nil;
     
@@ -199,13 +173,7 @@
     }
 }
 
-
-//=================================================================
-//                           getObjects:range:
-//=================================================================
 #pragma mark - getObjects:range:
-
-//NSArray getObjects:range:
 - (void)NSArrayAvoidCrashGetObjects:(__unsafe_unretained id  _Nonnull *)objects range:(NSRange)range {
     
     @try {
@@ -220,8 +188,19 @@
     }
 }
 
+- (void)__NSConstantArrayAvoidCrashGetObjects:(__unsafe_unretained id  _Nonnull *)objects range:(NSRange)range {
+    
+    @try {
+        [self __NSConstantArrayAvoidCrashGetObjects:objects range:range];
+    } @catch (NSException *exception) {
+        
+        NSString *defaultToDo = AvoidCrashDefaultIgnore;
+        [AvoidCrash noteErrorWithException:exception defaultToDo:defaultToDo];
+    } @finally {
+        
+    }
+}
 
-//__NSSingleObjectArrayI  getObjects:range:
 - (void)__NSSingleObjectArrayIAvoidCrashGetObjects:(__unsafe_unretained id  _Nonnull *)objects range:(NSRange)range {
     
     @try {
@@ -236,8 +215,6 @@
     }
 }
 
-
-//__NSArrayI  getObjects:range:
 - (void)__NSArrayIAvoidCrashGetObjects:(__unsafe_unretained id  _Nonnull *)objects range:(NSRange)range {
     
     @try {
@@ -251,8 +228,5 @@
         
     }
 }
-
-
-
 
 @end

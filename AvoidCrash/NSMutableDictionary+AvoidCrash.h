@@ -11,14 +11,8 @@
 
 @interface NSMutableDictionary (AvoidCrash)<AvoidCrashProtocol>
 
+- (NSMutableDictionary *)needSafe;
+- (NSMutableDictionary *)needSafeV2;
+- (NSMutableDictionary *)needSafeV3;
 
 @end
-
-
-/**
- *  Can avoid crash method
- *
- *  1. - (void)setObject:(id)anObject forKey:(id<NSCopying>)aKey
- *  2. - (void)removeObjectForKey:(id)aKey
- *
- */

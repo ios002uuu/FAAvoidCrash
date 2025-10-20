@@ -25,6 +25,8 @@
 		04FB61D91DB2361400C079F2 /* NSAttributedString+AvoidCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 04FB61D81DB2361400C079F2 /* NSAttributedString+AvoidCrash.m */; };
 		04FB61DC1DB25FE500C079F2 /* NSMutableAttributedString+AvoidCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 04FB61DB1DB25FE500C079F2 /* NSMutableAttributedString+AvoidCrash.m */; };
 		04FEB8FF1DA55E6B00B5647E /* NSMutableString+AvoidCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = 04FEB8FE1DA55E6B00B5647E /* NSMutableString+AvoidCrash.m */; };
+		9298F0892EA624ED00F264BE /* ACAvoidLockTaskQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9298F0882EA624ED00F264BE /* ACAvoidLockTaskQueue.m */; };
+		9298F08C2EA62C8700F264BE /* NSArray+SafeAisle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9298F08B2EA62C8700F264BE /* NSArray+SafeAisle.m */; };
 		F61CF29C1FF2206D006093D9 /* AvoidCrashPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = F61CF29B1FF2206D006093D9 /* AvoidCrashPerson.m */; };
 		F63018CE1F22EFA000F176DF /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = F63018CD1F22EFA000F176DF /* Person.m */; };
 		F6EBB7B51F271CCB00ED3B15 /* AvoidCrashStubProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6EBB7B41F271CCB00ED3B15 /* AvoidCrashStubProxy.m */; };
@@ -84,6 +86,10 @@
 		04FB61DB1DB25FE500C079F2 /* NSMutableAttributedString+AvoidCrash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+AvoidCrash.m"; sourceTree = "<group>"; };
 		04FEB8FD1DA55E6B00B5647E /* NSMutableString+AvoidCrash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableString+AvoidCrash.h"; sourceTree = "<group>"; };
 		04FEB8FE1DA55E6B00B5647E /* NSMutableString+AvoidCrash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableString+AvoidCrash.m"; sourceTree = "<group>"; };
+		9298F0872EA624ED00F264BE /* ACAvoidLockTaskQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ACAvoidLockTaskQueue.h; sourceTree = "<group>"; };
+		9298F0882EA624ED00F264BE /* ACAvoidLockTaskQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ACAvoidLockTaskQueue.m; sourceTree = "<group>"; };
+		9298F08A2EA62C8700F264BE /* NSArray+SafeAisle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+SafeAisle.h"; sourceTree = "<group>"; };
+		9298F08B2EA62C8700F264BE /* NSArray+SafeAisle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+SafeAisle.m"; sourceTree = "<group>"; };
 		F61CF29A1FF2206D006093D9 /* AvoidCrashPerson.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AvoidCrashPerson.h; sourceTree = "<group>"; };
 		F61CF29B1FF2206D006093D9 /* AvoidCrashPerson.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AvoidCrashPerson.m; sourceTree = "<group>"; };
 		F63018CC1F22EFA000F176DF /* Person.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Person.h; sourceTree = "<group>"; };
@@ -190,6 +196,10 @@
 			children = (
 				043C64161D93A60C00A0B0E9 /* AvoidCrash.h */,
 				043C64171D93A60C00A0B0E9 /* AvoidCrash.m */,
+				9298F08A2EA62C8700F264BE /* NSArray+SafeAisle.h */,
+				9298F08B2EA62C8700F264BE /* NSArray+SafeAisle.m */,
+				9298F0872EA624ED00F264BE /* ACAvoidLockTaskQueue.h */,
+				9298F0882EA624ED00F264BE /* ACAvoidLockTaskQueue.m */,
 				F6EBB7B31F271CCB00ED3B15 /* AvoidCrashStubProxy.h */,
 				F6EBB7B41F271CCB00ED3B15 /* AvoidCrashStubProxy.m */,
 				F63018D21F23153A00F176DF /* AvoidCrashProtocol.h */,
@@ -301,6 +311,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -358,9 +369,11 @@
 				04C3DFD31DA4EED200E18858 /* NSString+AvoidCrash.m in Sources */,
 				F61CF29C1FF2206D006093D9 /* AvoidCrashPerson.m in Sources */,
 				04FEB8FF1DA55E6B00B5647E /* NSMutableString+AvoidCrash.m in Sources */,
+				9298F08C2EA62C8700F264BE /* NSArray+SafeAisle.m in Sources */,
 				043C64231D93A60C00A0B0E9 /* NSMutableArray+AvoidCrash.m in Sources */,
 				04FB61D91DB2361400C079F2 /* NSAttributedString+AvoidCrash.m in Sources */,
 				04FB61DC1DB25FE500C079F2 /* NSMutableAttributedString+AvoidCrash.m in Sources */,
+				9298F0892EA624ED00F264BE /* ACAvoidLockTaskQueue.m in Sources */,
 				F63018CE1F22EFA000F176DF /* Person.m in Sources */,
 				043C64241D93A60C00A0B0E9 /* NSMutableDictionary+AvoidCrash.m in Sources */,
 				043C64201D93A60C00A0B0E9 /* AvoidCrash.m in Sources */,
@@ -508,7 +521,7 @@
 				DEVELOPMENT_TEAM = H659824MAF;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				INFOPLIST_FILE = AvoidCrashDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = chenfanfang.AvoidCrashDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -525,7 +538,7 @@
 				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				INFOPLIST_FILE = AvoidCrashDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = chenfanfang.AvoidCrashDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

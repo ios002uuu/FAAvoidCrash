@@ -27,12 +27,7 @@
     });
 }
 
-//=================================================================
-//                          initWithString:
-//=================================================================
 #pragma mark - initWithString:
-
-
 - (instancetype)avoidCrashInitWithString:(NSString *)str {
     id object = nil;
     
@@ -48,13 +43,7 @@
     }
 }
 
-
-//=================================================================
-//                     initWithString:attributes:
-//=================================================================
 #pragma mark - initWithString:attributes:
-
-
 - (instancetype)avoidCrashInitWithString:(NSString *)str attributes:(NSDictionary<NSString *,id> *)attrs {
     id object = nil;
     
